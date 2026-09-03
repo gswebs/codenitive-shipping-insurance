@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Codenitive Shipping Insurance
  * Description: Adds an optional shipping insurance toggle on WooCommerce cart and checkout pages.
- * Version: 1.8.0
+ * Version: 1.8.1
  * Author: Codenitive
  * Text Domain: codenitive-shipping-insurance
  * Requires Plugins: woocommerce
@@ -11,7 +11,7 @@
 defined( 'ABSPATH' ) || exit;
 
 final class Codenitive_Shipping_Insurance {
-	const VERSION = '1.8.0';
+	const VERSION = '1.8.1';
 	const OPTION  = 'codenitive_shipping_insurance';
 	const SESSION = 'codenitive_shipping_insurance_enabled_v2';
 	const VERSION_OPTION = 'codenitive_shipping_insurance_version';
@@ -138,12 +138,23 @@ final class Codenitive_Shipping_Insurance {
 	}
 
 	private function is_selected() {
-		$s = $this->settings();
-		if ( WC()->session && null !== WC()->session->get( self::SESSION, null ) ) {
-			return 'yes' === WC()->session->get( self::SESSION );
-		}
-		return 'yes' === $s['default_state'];
-	}
+        $s = $this->settings();
+    
+        if ( WC()->session ) {
+            $saved_state = WC()->session->get( self::SESSION, null );
+    
+            if ( null !== $saved_state ) {
+                return 'yes' === $saved_state;
+            }
+    
+            // Initialize session with the default setting[cite: 1]
+            $default = $s['default_state'];
+            WC()->session->set( self::SESSION, $default );
+            return 'yes' === $default;
+        }
+    
+        return 'yes' === $s['default_state'];
+    }
 
 	private function render( $context ) {
 		$s = $this->settings();
