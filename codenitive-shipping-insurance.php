@@ -2,10 +2,14 @@
 /**
  * Plugin Name: Codenitive Shipping Insurance
  * Description: Adds an optional shipping insurance toggle on WooCommerce cart and checkout pages.
+ * Plugin URI:  https://github.com/gswebs/codenitive-shipping-insurance
  * Version: 1.8.1
  * Author: Codenitive
  * Text Domain: codenitive-shipping-insurance
  * Requires Plugins: woocommerce
+ * Author URI:  https://codenitive.com
+ * License:     GPL v2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 defined( 'ABSPATH' ) || exit;
