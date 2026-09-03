@@ -1,0 +1,195 @@
+.codenitive-insurance {
+	box-sizing: border-box;
+	clear: both;
+	container-name: shipping-insurance;
+	container-type: inline-size;
+	margin: 0 0 28px;
+	transition: opacity 0.2s;
+	width: 100%;
+}
+
+.codenitive-insurance.is-loading {
+	opacity: 0.55;
+	pointer-events: none;
+}
+
+.codenitive-insurance h3 {
+	align-items: center;
+	color: #339af0;
+	display: flex;
+	font-size: 24px;
+	font-weight: 700;
+	gap: 12px;
+	line-height: 1.3;
+	margin: 0 0 22px;
+}
+
+.codenitive-insurance__shield {
+	align-items: center;
+	border: 2px solid currentColor;
+	border-radius: 5px 5px 12px 12px;
+	box-sizing: border-box;
+	display: inline-flex;
+	flex: 0 0 30px;
+	font-size: 20px;
+	height: 34px;
+	justify-content: center;
+	width: 30px;
+}
+
+label.codenitive-insurance__card {
+	align-items: center;
+	background: #f3f9fe;
+	border: 2px solid #339af0;
+	border-radius: 9px;
+	box-sizing: border-box;
+	cursor: pointer;
+	display: flex;
+	flex-direction: row;
+	gap: 24px;
+	justify-content: space-between;
+	margin: 0;
+	min-height: 160px;
+	padding: 32px 40px;
+	width: 100%;
+}
+
+.codenitive-insurance__copy {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	gap: 10px;
+	min-width: 0;
+}
+
+.codenitive-insurance__copy strong {
+	color: #222;
+	font-size: 22px;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.codenitive-insurance__copy > span {
+	color: #737373;
+	font-size: 18px;
+	line-height: 1.5;
+	max-width: 520px;
+}
+
+.codenitive-insurance__action {
+	align-items: center;
+	display: flex;
+	flex: 0 0 auto;
+	gap: 16px;
+}
+
+.codenitive-insurance__price,
+.codenitive-insurance__price .woocommerce-Price-amount {
+	color: #222;
+	font-size: 20px;
+	font-weight: 700;
+	line-height: 1;
+	white-space: nowrap;
+}
+
+.codenitive-insurance__action > input {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+.codenitive-insurance__switch {
+	background: #a9adb2;
+	border: 0;
+	border-radius: 20px;
+	box-shadow: none;
+	box-sizing: border-box;
+	display: block;
+	flex: 0 0 60px;
+	height: 34px;
+	position: relative;
+	transition: background-color 0.2s;
+	width: 60px;
+}
+
+.codenitive-insurance__switch::before,
+.codenitive-insurance__switch::after {
+	border: 0;
+	box-shadow: none;
+	box-sizing: border-box;
+	content: "";
+}
+
+.codenitive-insurance__switch::after {
+	background: #fff;
+	border-radius: 50%;
+	height: 24px;
+	left: 5px;
+	position: absolute;
+	top: 5px;
+	transform: none;
+	transition: transform 0.2s;
+	width: 24px;
+}
+
+.codenitive-insurance__action > input:checked + .codenitive-insurance__switch {
+	background: #339af0;
+}
+
+.codenitive-insurance__action > input:checked + .codenitive-insurance__switch::after {
+	transform: translateX(26px);
+}
+
+.codenitive-insurance__action > input:focus-visible + .codenitive-insurance__switch {
+	outline: 3px solid rgba(51, 154, 240, 0.35);
+	outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+	label.codenitive-insurance__card {
+		align-items: flex-start;
+		flex-direction: column;
+		gap: 20px;
+		padding: 24px 20px;
+	}
+
+	.codenitive-insurance__action {
+		justify-content: space-between;
+		width: 100%;
+	}
+
+	.codenitive-insurance__copy strong {
+		font-size: 19px;
+	}
+
+	.codenitive-insurance__copy > span {
+		font-size: 16px;
+	}
+}
+
+/* CheckoutWC uses a narrow order-summary column even on desktop. */
+@container shipping-insurance (max-width: 520px) {
+	label.codenitive-insurance__card {
+		align-items: flex-start;
+		flex-direction: column;
+		gap: 20px;
+		padding: 24px 20px;
+	}
+
+	.codenitive-insurance__action {
+		justify-content: space-between;
+		width: 100%;
+	}
+
+	.codenitive-insurance__copy strong {
+		font-size: 19px;
+	}
+
+	.codenitive-insurance__copy > span {
+		font-size: 16px;
+	}
+}
