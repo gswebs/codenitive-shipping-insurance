@@ -3,7 +3,7 @@
  * Plugin Name: Codenitive Shipping Insurance
  * Description: Adds an optional shipping insurance toggle on WooCommerce cart and checkout pages.
  * Plugin URI:  https://github.com/gswebs/codenitive-shipping-insurance
- * Version: 1.8.1
+ * Version: 1.9.0
  * Author: Codenitive
  * Text Domain: codenitive-shipping-insurance
  * Requires Plugins: woocommerce
@@ -15,7 +15,7 @@
 defined( 'ABSPATH' ) || exit;
 
 final class Codenitive_Shipping_Insurance {
-	const VERSION = '1.8.1';
+	const VERSION = '1.9.0';
 	const OPTION  = 'codenitive_shipping_insurance';
 	const SESSION = 'codenitive_shipping_insurance_enabled_v2';
 	const VERSION_OPTION = 'codenitive_shipping_insurance_version';
@@ -42,8 +42,7 @@ final class Codenitive_Shipping_Insurance {
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'assets' ) );
-		add_action( 'woocommerce_before_cart_totals', array( $this, 'render_cart' ) );
-		add_action( 'woocommerce_after_checkout_billing_form', array( $this, 'render_checkout' ) );
+		$this->register_display_locations();
 		add_action( 'woocommerce_checkout_update_order_review', array( $this, 'capture_checkout_state' ) );
 		add_action( 'cfw_update_checkout_after_customer_save', array( $this, 'capture_checkout_state' ) );
 		add_action( 'woocommerce_cart_calculate_fees', array( $this, 'add_fee' ) );
@@ -62,7 +61,45 @@ final class Codenitive_Shipping_Insurance {
 			'fee'           => '3.00',
 			'default_state' => 'no',
 			'taxable'       => 'no',
+			'cart_location' => 'woocommerce_before_cart_totals',
+			'checkout_location' => 'woocommerce_after_checkout_billing_form',
 		);
+	}
+
+	private function cart_locations() {
+		return array(
+			'none'                           => __( 'Do not display on cart page', 'codenitive-shipping-insurance' ),
+			'woocommerce_before_cart'        => __( 'Before cart', 'codenitive-shipping-insurance' ),
+			'woocommerce_before_cart_table'  => __( 'Before cart table', 'codenitive-shipping-insurance' ),
+			'woocommerce_after_cart_table'   => __( 'After cart table', 'codenitive-shipping-insurance' ),
+			'woocommerce_before_cart_totals' => __( 'Before cart totals', 'codenitive-shipping-insurance' ),
+			'woocommerce_after_cart_totals'  => __( 'After cart totals', 'codenitive-shipping-insurance' ),
+			'woocommerce_after_cart'         => __( 'After cart', 'codenitive-shipping-insurance' ),
+		);
+	}
+
+	private function checkout_locations() {
+		return array(
+			'none'                                             => __( 'Do not display on checkout page', 'codenitive-shipping-insurance' ),
+			'woocommerce_checkout_before_customer_details'     => __( 'Before customer details', 'codenitive-shipping-insurance' ),
+			'woocommerce_after_checkout_billing_form'          => __( 'After billing form', 'codenitive-shipping-insurance' ),
+			'woocommerce_checkout_after_customer_details'      => __( 'After customer details', 'codenitive-shipping-insurance' ),
+			'woocommerce_checkout_before_order_review_heading' => __( 'Before order review heading', 'codenitive-shipping-insurance' ),
+			'woocommerce_checkout_before_order_review'         => __( 'Before order review', 'codenitive-shipping-insurance' ),
+			'woocommerce_checkout_after_order_review'          => __( 'After order review', 'codenitive-shipping-insurance' ),
+		);
+	}
+
+	private function register_display_locations() {
+		$s = $this->settings();
+
+		if ( isset( $this->cart_locations()[ $s['cart_location'] ] ) && 'none' !== $s['cart_location'] ) {
+			add_action( $s['cart_location'], array( $this, 'render_cart' ) );
+		}
+
+		if ( isset( $this->checkout_locations()[ $s['checkout_location'] ] ) && 'none' !== $s['checkout_location'] ) {
+			add_action( $s['checkout_location'], array( $this, 'render_checkout' ) );
+		}
 	}
 
 	private function settings() {
@@ -94,6 +131,17 @@ final class Codenitive_Shipping_Insurance {
 
 	public function sanitize_settings( $input ) {
 		$defaults = $this->defaults();
+		$cart_location = sanitize_key( $input['cart_location'] ?? $defaults['cart_location'] );
+		$checkout_location = sanitize_key( $input['checkout_location'] ?? $defaults['checkout_location'] );
+
+		if ( ! isset( $this->cart_locations()[ $cart_location ] ) ) {
+			$cart_location = $defaults['cart_location'];
+		}
+
+		if ( ! isset( $this->checkout_locations()[ $checkout_location ] ) ) {
+			$checkout_location = $defaults['checkout_location'];
+		}
+
 		return array(
 			'enabled'       => ! empty( $input['enabled'] ) ? 'yes' : 'no',
 			'heading'       => sanitize_text_field( $input['heading'] ?? $defaults['heading'] ),
@@ -102,6 +150,8 @@ final class Codenitive_Shipping_Insurance {
 			'fee'           => wc_format_decimal( $input['fee'] ?? $defaults['fee'] ),
 			'default_state' => ! empty( $input['default_state'] ) ? 'yes' : 'no',
 			'taxable'       => ! empty( $input['taxable'] ) ? 'yes' : 'no',
+			'cart_location' => $cart_location,
+			'checkout_location' => $checkout_location,
 		);
 	}
 
@@ -113,6 +163,16 @@ final class Codenitive_Shipping_Insurance {
 			<?php settings_fields( 'codenitive_shipping_insurance_group' ); ?>
 			<table class="form-table" role="presentation">
 			<tr><th><?php esc_html_e( 'Enable', 'codenitive-shipping-insurance' ); ?></th><td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[enabled]" value="1" <?php checked( $s['enabled'], 'yes' ); ?>> <?php esc_html_e( 'Show shipping insurance on cart and checkout pages', 'codenitive-shipping-insurance' ); ?></label></td></tr>
+			<tr><th><label for="csi-cart-location"><?php esc_html_e( 'Cart location', 'codenitive-shipping-insurance' ); ?></label></th><td><select id="csi-cart-location" name="<?php echo esc_attr( self::OPTION ); ?>[cart_location]">
+				<?php foreach ( $this->cart_locations() as $hook => $label ) : ?>
+					<option value="<?php echo esc_attr( $hook ); ?>" <?php selected( $s['cart_location'], $hook ); ?>><?php echo esc_html( $label ); ?></option>
+				<?php endforeach; ?>
+			</select></td></tr>
+			<tr><th><label for="csi-checkout-location"><?php esc_html_e( 'Checkout location', 'codenitive-shipping-insurance' ); ?></label></th><td><select id="csi-checkout-location" name="<?php echo esc_attr( self::OPTION ); ?>[checkout_location]">
+				<?php foreach ( $this->checkout_locations() as $hook => $label ) : ?>
+					<option value="<?php echo esc_attr( $hook ); ?>" <?php selected( $s['checkout_location'], $hook ); ?>><?php echo esc_html( $label ); ?></option>
+				<?php endforeach; ?>
+			</select><p class="description"><?php esc_html_e( 'CheckoutWC compatibility depends on the template. After billing form is the recommended position.', 'codenitive-shipping-insurance' ); ?></p></td></tr>
 			<tr><th><label for="csi-heading"><?php esc_html_e( 'Heading', 'codenitive-shipping-insurance' ); ?></label></th><td><input class="regular-text" id="csi-heading" name="<?php echo esc_attr( self::OPTION ); ?>[heading]" value="<?php echo esc_attr( $s['heading'] ); ?>"></td></tr>
 			<tr><th><label for="csi-label"><?php esc_html_e( 'Option label', 'codenitive-shipping-insurance' ); ?></label></th><td><input class="regular-text" id="csi-label" name="<?php echo esc_attr( self::OPTION ); ?>[label]" value="<?php echo esc_attr( $s['label'] ); ?>"></td></tr>
 			<tr><th><label for="csi-description"><?php esc_html_e( 'Description', 'codenitive-shipping-insurance' ); ?></label></th><td><textarea class="large-text" rows="3" id="csi-description" name="<?php echo esc_attr( self::OPTION ); ?>[description]"><?php echo esc_textarea( $s['description'] ); ?></textarea></td></tr>
@@ -151,7 +211,7 @@ final class Codenitive_Shipping_Insurance {
                 return 'yes' === $saved_state;
             }
     
-            // Initialize session with the default setting[cite: 1]
+			// Initialize the session with the configured default state.
             $default = $s['default_state'];
             WC()->session->set( self::SESSION, $default );
             return 'yes' === $default;
