@@ -149,7 +149,92 @@ label.codenitive-insurance__card {
 	outline-offset: 3px;
 }
 
+.codenitive-insurance--tiered {
+	background: #eef8ff;
+	border-radius: 8px;
+	padding: 28px;
+}
+
+.codenitive-insurance--tiered h3 {
+	color: #222;
+	font-size: 24px;
+	margin-bottom: 22px;
+}
+
+.codenitive-insurance__choices {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+label.codenitive-insurance__choice {
+	align-items: center;
+	cursor: pointer;
+	display: flex;
+	font-size: 18px;
+	gap: 12px;
+	line-height: 1.4;
+	margin: 0;
+}
+
+.codenitive-insurance__choice input[type="radio"] {
+	accent-color: #1683ff;
+	flex: 0 0 auto;
+	height: 20px;
+	margin: 0;
+	width: 20px;
+}
+
+.codenitive-insurance__choice strong,
+.codenitive-insurance__choice strong .woocommerce-Price-amount {
+	color: #9a7118;
+	font-weight: 700;
+}
+
+.codenitive-insurance__tiered-description {
+	color: #5f6368;
+	font-size: 16px;
+	line-height: 1.65;
+	margin: 22px 0 0;
+}
+
+.codenitive-insurance__instructions {
+	margin-top: 28px;
+}
+
+.codenitive-insurance__instructions > label {
+	display: block;
+	font-size: 20px;
+	margin-bottom: 12px;
+}
+
+.codenitive-insurance__instructions textarea {
+	background: #fff;
+	border: 1px solid #d5d8dc;
+	box-sizing: border-box;
+	display: block;
+	min-height: 150px;
+	padding: 12px;
+	resize: vertical;
+	width: 100%;
+}
+
+.codenitive-insurance__instructions p {
+	color: #5f6368;
+	font-size: 15px;
+	margin: 8px 0 0;
+}
+
 @media (max-width: 600px) {
+	.codenitive-insurance--tiered {
+		padding: 22px 18px;
+	}
+
+	label.codenitive-insurance__choice {
+		align-items: flex-start;
+		font-size: 16px;
+	}
+
 	label.codenitive-insurance__card {
 		align-items: flex-start;
 		flex-direction: column;
