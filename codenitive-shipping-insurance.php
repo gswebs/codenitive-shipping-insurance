@@ -3,7 +3,7 @@
  * Plugin Name: Codenitive Shipping Insurance
  * Description: Adds optional single-fee or tiered shipping insurance to WooCommerce cart and checkout pages.
  * Plugin URI:  https://github.com/gswebs/codenitive-shipping-insurance
- * Version: 2.1.0
+ * Version: 1.0.1
  * Author: Codenitive
  * Text Domain: codenitive-shipping-insurance
  * Requires Plugins: woocommerce
@@ -15,7 +15,7 @@
 defined( 'ABSPATH' ) || exit;
 
 final class Codenitive_Shipping_Insurance {
-	const VERSION = '2.1.0';
+	const VERSION = '1.0.1';
 	const OPTION  = 'codenitive_shipping_insurance';
 	const SESSION = 'codenitive_shipping_insurance_enabled_v2';
 	const CHOICE_SESSION = 'codenitive_shipping_insurance_choice_v1';
@@ -463,7 +463,9 @@ final class Codenitive_Shipping_Insurance {
 		$s = $this->settings();
 
 		if ( 'tiered' === $s['display_type'] ) {
-			$choice  = isset( $_POST['choice'] ) ? wc_format_decimal( wp_unslash( $_POST['choice'] ) ) : 'decline';
+			$choice = isset( $_POST['choice'] )
+				? wc_format_decimal( sanitize_text_field( wp_unslash( $_POST['choice'] ) ) )
+				: 'decline';
 			$options = $this->coverage_options();
 			$choice  = isset( $options[ $choice ] ) ? $choice : 'decline';
 			WC()->session->set( self::CHOICE_SESSION, $choice );
