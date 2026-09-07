@@ -3,7 +3,7 @@
  * Plugin Name: Codenitive Shipping Insurance
  * Description: Adds optional single-fee or tiered shipping insurance to WooCommerce cart and checkout pages.
  * Plugin URI:  https://github.com/gswebs/codenitive-shipping-insurance
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: Codenitive
  * Text Domain: codenitive-shipping-insurance
  * Requires Plugins: woocommerce
@@ -15,9 +15,10 @@
 defined( 'ABSPATH' ) || exit;
 
 final class Codenitive_Shipping_Insurance {
-	const VERSION = '1.0.1';
+	const VERSION = '1.0.2';
 	const OPTION  = 'codenitive_shipping_insurance';
 	const SESSION = 'codenitive_shipping_insurance_enabled_v2';
+	const SESSION_DEFAULT = 'codenitive_shipping_insurance_default_v1';
 	const CHOICE_SESSION = 'codenitive_shipping_insurance_choice_v1';
 	const INSTRUCTIONS_SESSION = 'codenitive_shipping_instructions_v1';
 	const VERSION_OPTION = 'codenitive_shipping_insurance_version';
@@ -146,7 +147,7 @@ final class Codenitive_Shipping_Insurance {
 	private function maybe_upgrade() {
 		$installed_version = get_option( self::VERSION_OPTION, '0' );
 
-		if ( version_compare( $installed_version, '1.7.0', '<' ) ) {
+		if ( version_compare( $installed_version, '1.0.2', '<' ) ) {
 			$settings                  = get_option( self::OPTION, array() );
 			$settings['default_state'] = 'no';
 			update_option( self::OPTION, $settings );
@@ -316,22 +317,46 @@ final class Codenitive_Shipping_Insurance {
 	}
 
 	private function is_selected() {
-        $s = $this->settings();
+    	$settings = $this->settings();
+    	$default  = $settings['default_state'];
     
-        if ( WC()->session ) {
-            $saved_state = WC()->session->get( self::SESSION, null );
+    	if ( ! WC()->session ) {
+    		return 'yes' === $default;
+    	}
     
-            if ( null !== $saved_state ) {
-                return 'yes' === $saved_state;
-            }
+    	$saved_state = WC()->session->get(
+    		self::SESSION,
+    		null
+    	);
     
-			// Initialize the session with the configured default state.
-            $default = $s['default_state'];
-            WC()->session->set( self::SESSION, $default );
-            return 'yes' === $default;
-        }
+    	$session_default = WC()->session->get(
+    		self::SESSION_DEFAULT,
+    		null
+    	);
     
-        return 'yes' === $s['default_state'];
+    	/*
+    	 * Initialize the selection when:
+    	 * 1. No selection exists in the session.
+    	 * 2. The administrator changed the default setting.
+    	 */
+    	if (
+    		null === $saved_state ||
+    		$default !== $session_default
+    	) {
+    		WC()->session->set(
+    			self::SESSION,
+    			$default
+    		);
+    
+    		WC()->session->set(
+    			self::SESSION_DEFAULT,
+    			$default
+    		);
+    
+    		return 'yes' === $default;
+    	}
+    
+    	return 'yes' === $saved_state;
     }
 
 	private function selected_choice() {

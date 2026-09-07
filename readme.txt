@@ -5,7 +5,7 @@ Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -119,7 +119,7 @@ No. Display locations control only where the selector appears. The configured fe
 
 == Changelog ==
 
-= 1.0.1 =
+= 1.0.2 =
 
 * Redesigned the settings screen with a professional card-based layout.
 * Added General, Display, Coverage Choices, and Advanced settings tabs.
@@ -130,6 +130,6 @@ No. Display locations control only where the selector appears. The configured fe
 
 == Upgrade Notice ==
 
-= 1.0.1 =
+= 1.0.2 =
 
 Introduces a redesigned settings page and a user-friendly coverage choice manager. Existing coverage levels are preserved automatically.
